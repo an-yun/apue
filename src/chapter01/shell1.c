@@ -7,8 +7,8 @@ int main(void)
     pid_t pid;
     int stauts;
 
-    printf("%% ");// prompt
-    while(fgets(buf, MAXLINE, STDIN_FILENO) != NULL)
+    printf("%%> ");// prompt
+    while(fgets(buf, MAXLINE, stdin) != NULL)
     {
         int cmd_len = strlen(buf);
         if(buf[cmd_len-1] == '\n')// replace \n with end char
@@ -20,7 +20,13 @@ int main(void)
         else if ( pid == 0 )// child process
         {
             execlp(buf, buf, (char *)0);
-
+            err_ret("couldn't execute: %s", buf);
+            exit(127);
         }
+
+        if((pid = waitpid(pid, &stauts, 0) < 0))
+            err_sys("waitpid error");
+        printf("%%> ");
     }
+    exit(0);
 }
