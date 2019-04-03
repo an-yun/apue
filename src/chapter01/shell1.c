@@ -19,7 +19,12 @@ int main(void)
         }
         else if ( pid == 0 )// child process
         {
-            execlp(buf, buf, (char *)0);
+            int arg_pos=0;
+            while(buf[arg_pos] != ' ' && buf[arg_pos] != 0)
+                ++arg_pos;
+            buf[arg_pos] = 0;
+            while(arg_pos < cmd_len && buf[++arg_pos] == ' ');
+            execlp(buf, buf,buf+arg_pos, (char *)0);
             err_ret("couldn't execute: %s", buf);
             exit(127);
         }
