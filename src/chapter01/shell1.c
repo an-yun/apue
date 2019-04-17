@@ -24,7 +24,9 @@ int main(void)
                 ++arg_pos;
             buf[arg_pos] = 0;
             while(arg_pos < cmd_len && buf[++arg_pos] == ' ');
-            execlp(buf, buf,buf+arg_pos, (char *)0);
+            if(arg_pos >= cmd_len || buf[arg_pos] == 0)
+                execlp(buf, buf, (char *)0);
+            else execlp(buf, buf,buf+arg_pos, (char *)0);
             err_ret("couldn't execute: %s", buf);
             exit(127);
         }
