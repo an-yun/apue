@@ -1,6 +1,6 @@
 #include "apue.h"
 #include <sys/wait.h>
-
+#define MAX_ARGC 128
 int main(void)
 {
     char buf[MAXLINE];
@@ -20,7 +20,7 @@ int main(void)
         else if ( pid == 0 )// child process
         {
             int arg_pos=0;
-            char **argv = (char **)malloc(sizeof(char *) * cmd_len);
+            char *argv[MAX_ARGC];
             int argc = 0;
             while (arg_pos < cmd_len && buf[arg_pos] != 0)
             {
@@ -34,9 +34,9 @@ int main(void)
                     buf[arg_pos++] = 0;
                 }
             }
+            //printf("%d args\n", argc);
             argv[argc] = 0;
             execvp(argv[0], argv);
-            free(argv);
             err_ret("couldn't execute: %s", buf);
             exit(127);
         }
