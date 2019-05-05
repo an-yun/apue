@@ -20,13 +20,23 @@ int main(void)
         else if ( pid == 0 )// child process
         {
             int arg_pos=0;
-            while(buf[arg_pos] != ' ' && buf[arg_pos] != 0)
-                ++arg_pos;
-            buf[arg_pos] = 0;
-            while(arg_pos < cmd_len && buf[++arg_pos] == ' ');
-            if(arg_pos >= cmd_len || buf[arg_pos] == 0)
-                execlp(buf, buf, (char *)0);
-            else execlp(buf, buf,buf+arg_pos, (char *)0);
+            char **argv = (char **)malloc(sizeof(char *) * cmd_len);
+            int argc = 0;
+            while (arg_pos < cmd_len && buf[arg_pos] != 0)
+            {
+                while(buf[arg_pos] == ' ')
+                    ++arg_pos;
+                if(buf[arg_pos] != 0)
+                {
+                    argv[argc++] = buf + arg_pos;
+                    while(buf[arg_pos] != ' ' && buf[arg_pos] != 0)
+                        ++arg_pos;
+                    buf[arg_pos++] = 0;
+                }
+            }
+            argv[argc] = 0;
+            execvp(argv[0], argv);
+            free(argv);
             err_ret("couldn't execute: %s", buf);
             exit(127);
         }
