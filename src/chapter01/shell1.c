@@ -1,11 +1,18 @@
 #include "apue.h"
 #include <sys/wait.h>
+
 #define MAX_ARGC 128
+
+static void sig_int(int);
+
 int main(void)
 {
     char buf[MAXLINE];
     pid_t pid;
     int stauts;
+
+    if(signal(SIGINT, sig_int) == SIG_ERR)
+        err_sys("signal erros");
 
     printf("%%> ");// prompt
     while(fgets(buf, MAXLINE, stdin) != NULL)
@@ -14,9 +21,7 @@ int main(void)
         if(buf[cmd_len-1] == '\n')// replace \n with end char
            buf[cmd_len-1] = 0;
         if((pid=fork()) < 0)
-        {
             err_sys("fork error");
-        }
         else if ( pid == 0 )// child process
         {
             int arg_pos=0;
@@ -46,4 +51,9 @@ int main(void)
         printf("%%> ");
     }
     exit(0);
+}
+
+void sig_int(int signo)
+{
+    printf("interupt\n %%>");
 }
